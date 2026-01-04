@@ -1,0 +1,45 @@
+.status {
+  color: var(--white);
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  border-radius: 4px;
+  padding-bottom: 4px;
+  padding-top: 4px;
+}
+
+.received {
+  background-color: var(--dark-green);
+}
+
+.pending, .pending-approval {
+  background-color: var(--dark-yellow);
+}
+
+.canceled {
+  background-color: #CCCCCC;
+}
+
+.partial, .partially-received, .partially-answered {
+  background-color: var(--dark-orange);
+  font-size: 13px;
+}
+
+.in-transit, .pending-boarding, .fully-serviced {
+  background-color: var(--light-blue);
+}
+
+.fully-received {
+  background-color: var(--dark-green);
+}
+
+.not-approved {
+  background-color: var(--dark-red);
+}
+
+.approved {
+  background-color: var(--dark-green);
+}
+
+.pending-approval {
+  background-color: var(--dark-yellow);
+}

@@ -1,0 +1,70 @@
+<main role="main" class="container">
+    <app-generic-page [config]="config" #genericPage></app-generic-page>
+</main>
+
+<ng-template #filterModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Filtros</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss() ; clearFilters()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body d-flex flex-lg-wrap">
+        <div class="form-group col-6">
+            <label for="cnpjInput">CNPJ</label>
+            <input type="text" class="form-control" mask="00.000.000/0000-00" placeholder="Digite o CNPJ" [(ngModel)]="cnpjFilter" ngbAutofocus>
+        </div>
+        <div class="form-group col-6">
+            <label for="companyNameInput">Razão Social</label>
+            <input type="text" class="form-control" placeholder="Digite a Razão Social" [(ngModel)]="companyNameFilter" maxlength="250">
+        </div><br>
+        <div class="form-group col-6">
+            <label for="fantasyNameInput">Nome Fantasia</label>
+            <input type="text" class="form-control" placeholder="Digite o Nome Fantasia" [(ngModel)]="fantasyNameFilter" maxlength="100">
+        </div>
+        <div class="form-group col-6">
+            <label for="telephoneInput">Telefone</label>
+            <input type="text" class="form-control" placeholder="Digite o Telefone" [ngModel]="telephoneFilter" mask="{{ maskTel }}" (ngModelChange)="telephoneFilter=$event;maskTelephone()">
+        </div>
+        <div class="form-group col-4">
+            <label for="streetInput">Logradouro</label>
+            <input type="text" class="form-control" placeholder="Digite a Rua, Avenida" [(ngModel)]="streetFilter" maxlength="100">
+        </div>
+        <div class="form-group col-4">
+            <label for="numberInput">Número</label>
+            <input type="text" class="form-control" placeholder="Digite o Número" [(ngModel)]="numberFilter" maxlength="8">
+        </div>
+        <div class="form-group col-4">
+            <label for="neighborhoodInput">Bairro</label>
+            <input type="text" class="form-control" placeholder="Digite o Bairro" [(ngModel)]="neighborhoodFilter" maxlength="80">
+        </div>
+        <div class="form-group col-4 ">
+            <label for="cepInput ">CEP</label>
+            <input type="text " class="form-control " placeholder="Digite o CEP " mask="00000-000 " [(ngModel)]="cepFilter ">
+        </div>
+
+        <div class="form-group col-4 ">
+            <label for="state ">Estado</label>
+            <ng-select [items]="listUf " bindLabel="text " bindValue="text " [(ngModel)]="ufFilter " (change)="fillCityCombo($event.id) " placeholder="Selecione ">
+            </ng-select>
+        </div>
+
+        <div class="form-group col-4 ">
+            <label for="city ">Cidade</label>
+            <ng-select [items]="listCities " bindLabel="text " bindValue="text " [(ngModel)]="cityFilter " placeholder="Selecione " [class.disabled]="!ufFilter ">
+            </ng-select>
+        </div>
+
+
+    </div>
+    <div class="modal-footer ">
+        <button type="button " class="btn btn-outline-success btn-clear-filter mr-auto p-2 bd-highlight " (click)="clearFilters(); genericPage.getData(); ">
+            <span class="fa fa-times-circle "></span>
+            Limpar Filtros
+        </button>
+        <button type="button " class="btn btn-outline-success btn-filter " (click)="genericPage.getData(); modal.dismiss(); ">
+            <span class="fa fa-search "></span>
+            Pesquisar
+        </button>
+    </div>
+</ng-template>

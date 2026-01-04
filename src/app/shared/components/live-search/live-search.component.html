@@ -1,0 +1,9 @@
+<ng-select
+    [items]="items"
+    [bindLabel]="label"
+    [bindValue]="value"
+    (search)="emitSearch($event)"
+    (clear)="emitSearch({ term: '' })"
+    (change)="emitChange($event)"
+    [placeholder]="placeHolder">
+</ng-select>

@@ -1,0 +1,173 @@
+<main role="main" class="container">
+  <app-generic-page [config]="config" #genericPage></app-generic-page>
+</main>
+
+<ng-template #filterModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title" ngbAutofocus>Filtros</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss() ; clearFilters()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="filterForm" class="d-flex flex-lg-wrap">
+      <div class="form-group col-6">
+        <label for="orders">RMA</label>
+        <input type="text" class="form-control" placeholder="Código RMA" formControlName="rma">
+      </div>
+      <div class="form-group col-3">
+        <app-datepicker labelName="Data de Emissão RMA" (dateChange)="setInitialDate($event)"
+          formControlName="initialDate">
+        </app-datepicker>
+      </div>
+      <div class="form-group col-3">
+        <app-datepicker labelName="Data de Emissão RMA" (dateChange)="setfinishDate($event)"
+          formControlName="finishDate">
+        </app-datepicker>
+      </div>
+      <div class="form-group col-6">
+        <label for="status">Status RMA</label>
+        <ng-select [items]="statusList" bindLabel="text" bindValue="text" formControlName="status"
+          placeholder="Selecione">
+        </ng-select>
+      </div>
+      <div class="form-group col-6">
+        <label for="approver">Requisitante</label>
+        <ng-select [items]="requisitanteList" bindLabel="text" bindValue="text" formControlName="requisitante"
+          placeholder="Selecione">
+        </ng-select>
+      </div>
+      <div class="form-group col-4">
+        <label for="installation">Instalação Origem</label>
+        <ng-select [items]="installationList" bindLabel="text" bindValue="text" formControlName="installationSource"
+          placeholder="Selecione">
+        </ng-select>
+      </div>
+      <div class="form-group col-4">
+        <label for="receiverCode">Código Destinatário</label>
+        <ng-select [items]="receiverCodeList" bindLabel="text" bindValue="text" formControlName="receiverCode"
+          placeholder="Selecione">
+        </ng-select>
+      </div>
+      <div class="form-group col-4">
+        <label for="receiverName">Código Material</label>
+        <input type="text" class="form-control" placeholder="Selecionar" formControlName="materialCode">
+      </div>
+      <div class="form-group col-6">
+        <label for="materialDescription">Descrição</label>
+        <input type="text" class="form-control" placeholder="Digite a Descrição" formControlName="description">
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-success btn-clear-filter mr-auto p-2 bd-highlight"
+      (click)="clearFilters(); genericPage.getData();">
+      <span class="fa fa-times-circle"></span>
+      Limpar Filtros
+    </button>
+    <button type="button" class="btn btn-outline-success btn-filter" (click)="genericPage.getData(); modal.dismiss();">
+      <span class="fa fa-search"></span>
+      Pesquisar
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #detailsModal let-modal>
+  <div *ngIf="dataDetailsModal">
+    <div class="modal-header">
+      <h4 class="modal-title blue-title" id="modal-basic-title" ngbAutofocus>RMA {{ dataDetailsModal.rmaId }}</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss();">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
+    <div class="row">
+      <div class="col-5">
+        <div class="card triple-card-first-position">
+          <div class="card-body triple-card__body">
+            <div class="row">
+              <div class="col">
+                <p class="information-title">Data Emissão</p>
+                <span class="information-item">{{ dataDetailsModal.emissionDate | date: 'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="col-5">
+                <p class="information-title">Status</p>
+                <span class="information-item">
+                  <app-status [status]="dataDetailsModal.status"></app-status>
+                </span>
+              </div>
+              <div class="col">
+                <p class="information-title">Aprovador</p>
+                <span class="information-item">{{ dataDetailsModal.approverUser }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-2">
+        <div class="card triple-card-second-position">
+          <div class="card-body triple-card__body">
+            <div class="row">
+              <div class="col">
+                <p class="information-title">Instalação Origem</p>
+                <span class="information-item">{{ dataDetailsModal.installation }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-5">
+        <div class="card triple-card-third-position">
+          <div class="card-body triple-card__body">
+            <div class="row">
+              <div class="col">
+                <p class="information-title">Código Destinatário</p>
+                <span class="information-item">{{ dataDetailsModal.receiverCode }}</span>
+              </div>
+              <div class="col">
+                <p class="information-title">Nome Destinatário</p>
+                <span class="information-item">{{ dataDetailsModal.receiverName }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <table class="table table-striped modal-table">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Cod. Material</th>
+          <th>Descrição</th>
+          <th>Un.</th>
+          <th>Disciplina</th>
+          <th>Solicitado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of dataDetailsModal.materials; let i = index;">
+          <td>{{ i + 1 }}</td>
+          <td>{{ item.materialCode }}</td>
+          <td>{{ item.description }}</td>
+          <td>{{ item.unity }}</td>
+          <td>{{ item.discipline }}</td>
+          <td>{{ item.requested }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-danger btn-cancel" (click)="modal.dismiss();">
+        <span class="fa fa-times"></span>
+        Cancelar
+      </button>
+      <button type="button" class="btn btn-outline-success btn-save" (click)="modal.dismiss(); changePage()">
+        <span class="fa fa-download"></span>
+        Criar Saída RMA
+      </button>
+    </div>
+  </div>
+</ng-template>

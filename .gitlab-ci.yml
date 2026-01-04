@@ -1,0 +1,70 @@
+stages:
+  - analyze
+  - build
+  - deploy
+
+variables:
+  CONTAINER_IMAGE_FASE1: nexusdocker.luxfacta.com/luxfacta/projetos/aceite/sbei-sk-sgm-front
+  CONTAINER_IMAGE_RELEASE: nexusdocker.luxfacta.com/luxfacta/projetos/aceite/sgm/release100/sbei-sk-sgm-front
+  CONTAINER_IMAGE_RELEASE2: nexusdocker.luxfacta.com/luxfacta/projetos/aceite/sgm/release200/sbei-sk-sgm-front
+
+sonarqube:
+  stage: analyze
+  only:
+    refs:
+      - feature/fase-2@sbei-sk/sgm-front
+  image:
+    name: ciricihq/gitlab-sonar-scanner
+  allow_failure: true
+  script:
+  - apk add npm
+  - npm install -D typescript
+  - sonar-scanner -Dsonar.host.url=http://sonarqube.luxfacta.com.br -Dsonar.projectKey=sbei-sk-sgm-front -Dsonar.projectName="SBEI-SK - SGM Front" -Dsonar.projectVersion=${CI_JOB_ID} -Dsonar.sources=e2e,src -Dsonar.sourceEncoding=UTF-8
+
+Build-fase1:
+  only: 
+    refs:
+      - feature/fase-2@sbei-sk/sgm-front
+    variables:
+      - $CI_MERGE_REQUEST_ID == null
+  image: 
+    name: docker:stable
+  stage: build
+  script:
+    - docker login -u $NEXUS_USER -p $NEXUS_PASSWORD nexusdocker.luxfacta.com
+    - docker build --build-arg env=development_luxfacta --tag $CONTAINER_IMAGE_FASE1:latest .
+    - docker push $CONTAINER_IMAGE_FASE1:latest
+
+Build-Release:
+  only: 
+    refs:
+      - release/2.0.0@sbei-sk/sgm-front
+    variables:
+      - $CI_MERGE_REQUEST_ID == null
+  image: 
+    name: docker:stable
+  stage: build
+  script:
+    - docker login -u $NEXUS_USER -p $NEXUS_PASSWORD nexusdocker.luxfacta.com
+    - docker build --build-arg env=staging_luxfacta --tag $CONTAINER_IMAGE_RELEASE2:latest .
+    - docker push $CONTAINER_IMAGE_RELEASE2:latest
+
+Deploy-fase2:
+  image: 
+    name: augustopimenta/ssh-client:latest
+  stage: deploy
+  only:
+    - feature/fase-2@sbei-sk/sgm-front
+  script:
+    - sshpass -p "$SERVER_PASSWORD" scp -o stricthostkeychecking=no ./docker-compose.yml root@containers.luxfacta.com.br:/opt/sgm/front/fase-2/
+    - sshpass -p "$SERVER_PASSWORD" ssh -o stricthostkeychecking=no root@containers.luxfacta.com.br "docker login -u $NEXUS_USER -p $NEXUS_PASSWORD nexusdocker.luxfacta.com; docker stack deploy --with-registry-auth -c /opt/sgm/front/fase-2/docker-compose.yml sgm"
+
+Deploy-Release2:
+  image: 
+    name: augustopimenta/ssh-client:latest
+  stage: deploy
+  only:
+    - release/2.0.0@sbei-sk/sgm-front
+  script:
+    - sshpass -p "$SERVER_PASSWORD" scp -o stricthostkeychecking=no ./docker-compose-release.yml root@containers.luxfacta.com.br:/opt/sgm/front/release/2.0.0/
+    - sshpass -p "$SERVER_PASSWORD" ssh -o stricthostkeychecking=no root@containers.luxfacta.com.br "docker login -u $NEXUS_USER -p $NEXUS_PASSWORD nexusdocker.luxfacta.com; docker stack deploy --with-registry-auth -c /opt/sgm/front/release/2.0.0/docker-compose-release.yml sgm"

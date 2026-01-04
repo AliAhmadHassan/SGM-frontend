@@ -1,0 +1,73 @@
+.img-login {
+  height: 100vh;
+  width: 100%;
+  background-image: url("../../../../assets/images/foto_tela_login.png");
+  background-size: cover;
+}
+
+.logo-sgm {
+  height: 14vh;
+  margin-top: 16vh;
+}
+
+.description-system {
+  font-size: 19px;
+}
+
+.icon-login {
+  color: #A4A4A8
+}
+
+label {
+  text-align: center;
+  font-size: 16px;
+  color: #666666;
+}
+
+.formLogin {
+  width: 100vh;
+  background-color: #FFF;
+  border-radius: 10px;
+  border: 1px solid #A4A4A8;
+  max-width: 358px;
+}
+
+input {
+  border: none !important;
+  width: calc(100% - 16px) !important;
+  box-shadow: none !important;
+}
+
+.form-buttons {
+  max-width: 54vh;
+}
+
+button {
+  background: #FFF;
+  color: #666666;
+  border: 1px solid #666666;
+}
+
+.check-box {
+  width: auto !important;
+}
+
+.form-check {
+  padding-left: 1rem;
+}
+
+.logo-sk {
+  height: 11vh;
+}
+
+.copyright {
+  font-size: 13px;
+}
+
+.bodyLogin {
+  max-height: 100vh;
+  background: #FFF !important;
+  padding: 0 !important;
+  margin-right: 0 !important;
+  overflow: hidden ;
+}

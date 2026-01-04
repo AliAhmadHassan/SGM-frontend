@@ -1,0 +1,158 @@
+<main role="main" class="container">
+    <app-generic-page [config]="config" #genericPage></app-generic-page>
+</main>
+
+<ng-template #filterModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title" ngbAutofocus>Filtros</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss() ; clearFilters()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body d-flex flex-lg-wrap">
+        <div class="form-group col-6">
+            <label for="branchOffice">Filial</label>
+            <ng-select [items]="listBranchOffice" bindLabel="text" bindValue="text"
+                [(ngModel)]="branchOfficeDescriptionFilter" placeholder="Selecione" maxlength="128">
+            </ng-select>
+        </div>
+        <div class="form-group col-6">
+            <label for="orders">Pedido</label>
+            <input type="text" class="form-control" placeholder="Digite o Pedido" [(ngModel)]="orderCodeFilter"
+                maxlength="100">
+        </div>
+        <div class="form-group col-6">
+            <label for="provider">Fornecedor (Nome ou CNPJ)</label>
+            <input type="text" class="form-control" placeholder="Digite o Fornecedor" [(ngModel)]="providerNameFilter"
+                maxlength="250">
+        </div>
+        <div class="form-group col-6">
+            <label for="status">Status Pedido</label>
+            <ng-select [items]="listStatus" bindLabel="text" bindValue="text" [(ngModel)]="orderStatusFilter"
+                placeholder="Selecione">
+            </ng-select>
+        </div>
+        <div class="form-group col-3">
+            <app-datepicker labelName="Data de Emissão do Pedido" [(date)]="dateBeginFilter" buttonText="De">
+            </app-datepicker>
+        </div>
+        <div class="form-group col-3">
+            <app-datepicker labelName="Data de Emissão do Pedido" [(date)]="dateFinishFilter" buttonText="Até">
+            </app-datepicker>
+        </div>
+        <div class="form-group col-6">
+          <label for="materialCode">Código Material</label>
+            <app-live-search label="code" value="code"
+              [items]="materials"
+              (search)="customSearchFn($event)"
+              (change)="setMaterial($event, i)">
+            </app-live-search>
+        </div>
+        <div class="form-group col-12">
+            <label for="materialDescription">Descrição do Material</label>
+            <input type="text" class="form-control" placeholder="Digite a Descrição"
+                [(ngModel)]="materialDescriptionFilter" maxlength="250">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-success btn-clear-filter mr-auto p-2 bd-highlight"
+            (click)="clearFilters(); genericPage.getData();">
+            <span class="fa fa-times-circle"></span>
+            Limpar Filtros
+        </button>
+        <button type="button" class="btn btn-outline-success btn-filter"
+            (click)="genericPage.getData(); modal.dismiss();">
+            <span class="fa fa-search"></span>
+            Pesquisar
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #detailsModal let-modal>
+    <div *ngIf="data">
+        <div class="modal-header">
+            <h4 class="modal-title blue-title" id="modal-basic-title" ngbAutofocus>Pedido {{data.orderCode}}</h4>
+            <button type="button" class="close" aria-label="Close" (click)="modal.dismiss();">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <div class="card single-card">
+            <div class="card-body single-card__body">
+                <div class="row">
+                    <div class="col-3">
+                        <span class="information-title">Filial</span>
+                        <p class="information-item">{{ data.branchOfficeDescription }}</p>
+                    </div>
+                    <div class="col-5">
+                        <span class="information-title">Fornecedor</span>
+                        <p class="information-item">{{ data.providerName }}</p>
+                        <span class="information-item--cnpj">{{data.cnpj}}</span>
+                    </div>
+                    <div class="col-2">
+                        <span class="information-title">Emissão do Pedido</span>
+                        <p class="information-item">{{ data.orderEmission | date: 'dd/MM/yyyy' }}</p>
+                    </div>
+                    <div class="col-2">
+                        <p class="information-title">Status</p>
+                        <app-status [status]="data.orderStatus"></app-status>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <table class="table table-striped rounded-top modal-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Cod. Material</th>
+                    <th>Cod. Prod. Forn.</th>
+                    <th>Descrição</th>
+                    <th>Un.</th>
+                    <th>Qtd. Prod</th>
+                    <th>Valor Un.</th>
+                    <th>Valor Total</th>
+                    <th>Recebido</th>
+                    <th>Pendente</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of data.orderItem">
+                    <td>{{ item.item }}</td>
+                    <td>{{ item.materialCode }}</td>
+                    <td>{{ item.providerProductCode }}</td>
+                    <td>{{ item.materialDescription }}</td>
+                    <td>{{ item.unity }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.unitaryCost | currency: 'BRL'}}</td>
+                    <td>{{ item.totalCost | currency: 'BRL' }}</td>
+                    <td>{{ item.amountReceived }}</td>
+                    <td>{{ item.pending }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="modal-footer d-flex">
+            <button type="button" class="btn btn-outline-success btn-export"
+                (click)="genericPage.getData(); modal.dismiss(); cancelAction();">
+                <span class="fa fa-share-square"></span>
+                Exportar
+            </button>
+            <button type="button" class="btn btn-outline-success btn-print mr-auto"
+                (click)="printModal(); modal.dismiss();">
+                <span class="fa fa-print"></span>
+                Imprimir
+            </button>
+            <button type="button" class="btn btn-outline-success btn-cancel"
+                (click)="modal.dismiss();">
+                <span class="fa fa-times"></span>
+                Fechar
+            </button>
+            <button *ngIf="data.orderStatus != 'Cancelado' && data.orderStatus != 'Recebido'" type="button"
+                class="btn btn-outline-success btn-save" (click)="modal.dismiss(); changePage()">
+                <span class="fa fa-download"></span>
+                Receber
+            </button>
+        </div>
+    </div>
+</ng-template>

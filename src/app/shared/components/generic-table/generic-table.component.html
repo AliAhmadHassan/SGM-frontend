@@ -1,0 +1,58 @@
+<table *ngIf="config" class="table-striped">
+    <thead>
+        <tr>
+            <th class="td-text pb-2" *ngFor="let column of config?.columns">{{ column.text }}</th>
+            <th class="td-text pb-2" *ngIf="config?.actions.length > 0">Ação</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let item of tableData">
+            <td title="{{ column.prop ? (item[column.key] || {})[column.prop] : item[column.key] }}"
+                class="td-item"
+                [ngStyle]="{'width': column.config.width}"
+                *ngFor="let column of config?.columns">
+                <ng-container [ngSwitch]="column.config.type">
+                    <ng-template *ngSwitchCase="'date'" 
+                                [ngTemplateOutlet]="dateTemplate" 
+                                [ngTemplateOutletContext]="{ column: column, item: item }">
+                    </ng-template>
+                    <ng-template *ngSwitchCase="'status'" 
+                                [ngTemplateOutlet]="statusTemplate" 
+                                [ngTemplateOutletContext]="{ column: column, item: item }">
+                    </ng-template>
+                    <ng-container *ngSwitchDefault>
+                        <div *ngIf="isString(column.key)">
+                            {{ column.prop ? (item[column.key] || {})[column.prop] : item[column.key] | emptyField }}
+                        </div>
+                        <div class="d-flex flex-column" *ngIf="!isString(column.key)">
+                            <div *ngFor="let key of column.key">
+                                {{ column.prop ? (item[key] || {})[column.prop] : item[key] | emptyField }}
+                            </div>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </td>
+            <td class="td-action" *ngIf="config?.actions.length > 0">
+                <button title="{{ action.title }}" type="button" class="mr-1 btn" [ngClass]="action.btnClass"
+                    (click)="action.onClick(item)" *ngFor="let action of config?.actions">
+                    <span class="fas" [ngClass]="action.icon" *ngIf="action.icon"></span>
+                    {{ action.text }}
+                </button>
+            </td>
+        </tr>
+        <tr class="noRegisters text-center" *ngIf="!tableData || tableData.length == 0">
+            <td [attr.colspan]="config?.columns.length + config?.actions.length">
+                <img src="assets/images/sem_registro.svg" alt="pc de registros nao encontrados"><br>
+                <label class="text-center textNoRegister empty-table">Não há registros cadastrados</label>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<ng-template #dateTemplate let-column="column" let-item="item">
+    {{ column.prop ? (item[column.key] || {})[column.prop] : item[column.key] | date: 'dd/MM/yyyy' | emptyField }}
+</ng-template>
+<ng-template #statusTemplate let-column="column" let-item="item">
+    <app-status [status]="item[column.key]"></app-status>
+</ng-template>
+  

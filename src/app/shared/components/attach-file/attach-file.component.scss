@@ -1,0 +1,53 @@
+.custom-file {
+
+  .custom-file-input {
+    position: absolute;
+  }
+
+  .custom-file-label {
+    min-height: calc(1.5em + 0.75rem + 2px);
+    width: 100%;
+    height: auto;
+    padding: 0.5rem 0 0 .5rem;
+    position: inherit;
+
+    &::after {
+      display: none;
+    }
+
+    .files {
+      width: calc(100% - 9rem);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      
+      ::ng-deep span {
+        border-radius: 0.5em;
+        background-color: var(--dark-gray);
+        color: var(--white);
+        display: inline-block;
+        padding: .1rem .5rem;
+        margin-right: .5rem;
+        margin-bottom: .4rem;
+      }
+    }
+
+
+    .not_file {
+      display: block;
+      margin: 0;
+    }
+
+    button {
+      position: absolute;
+      z-index: 100;
+      right: 0;
+      top: 0;
+
+      span {
+        background-color: var(--white);
+        color: var(--dark-gray);
+        margin-bottom: 0;
+      }
+    }
+  }
+}

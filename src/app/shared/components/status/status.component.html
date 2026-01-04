@@ -1,0 +1,17 @@
+<span class="status" [ngClass]="{'canceled': status == 'Cancelado' || 'Cancelada',
+                    'received': status == 'Recebido' ,
+                    'pending': status == 'Em aberto',
+                    'partial': status == 'Recebido Parcialmente',
+                    'pending-boarding': status == 'Pendente de Embarque',
+                    'pending-approval': status == 'Pendente de Aprovação',
+                    'in-transit': status == 'Em Trânsito',
+                    'partially-received': status == 'Parcialmente Recebida',
+                    'fully-received': status == 'Totalmente Recebido',
+                    'not-approved': status == 'Não Aprovado',
+                    'approved': status == 'Aprovado',
+                    'pending-approval': status == 'Pendente aprovação',
+                    'partially-answered': status == 'Parcialmente Atendido',
+                    'fully-serviced': status == 'Totalmente Atendido'
+                }">
+    {{ status | emptyField }}
+</span>

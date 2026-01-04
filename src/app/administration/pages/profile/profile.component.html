@@ -1,0 +1,124 @@
+<main role="main" class="container">
+    <app-generic-page [config]="config" #genericPage></app-generic-page>
+</main>
+
+<ng-template #profileFilterModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Filtros</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss() ; clearFilters()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body d-flex flex-lg-wrap">
+        <div class="form-group col-6">
+            <label for="id">Nome</label>
+            <input type="text" class="form-control" id="id" placeholder="Digite o Nome" [(ngModel)]="nameFilter"
+                maxlength="100" ngbAutofocus>
+        </div>
+        <div class="form-group col-6">
+            <label for="description">Descrição</label>
+            <input type="text" class="form-control" id="name" placeholder="Digite a Descrição"
+                [(ngModel)]="descriptionFilter" maxlength="250">
+        </div><br>
+
+        <div class="form-group col-6">
+            <label for="tipo">Permissões</label>
+            <ng-select [multiple]="true" [items]="listPermissions" bindLabel="text" bindValue="id"
+                placeholder="Selecione" [(ngModel)]="permissionsFilter">
+            </ng-select>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-success btn-clear-filter mr-auto p-2 bd-highlight"
+            (click)="clearFilters(); genericPage.getData();">
+            <span class="fa fa-times-circle"></span>
+            Limpar Filtros
+        </button>
+        <button type="button" class="btn btn-outline-success btn-filter"
+            (click)="genericPage.getData(); modal.dismiss();">
+            <span class="fa fa-search"></span>
+            Pesquisar
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #profileModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">{{ edit ? 'Editar Perfil' : 'Novo Perfil'}}</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss();cancelAction();">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <form class="needs-validation" [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="modal-body d-flex flex-lg-wrap">
+            <div class="form-group col-4">
+                <label for="name">Nome</label>
+                <input type="text" class="form-control" placeholder="Pesquisar" formControlName="name"
+                    [class.is-invalid]="name.dirty && name.invalid" maxlength="100" ngbAutofocus>
+                <div class="invalid-feedback">
+                    Campo Obrigatório
+                </div>
+            </div>
+            <div class="form-group col-8">
+                <label for="description">Descrição</label>
+                <input type="text" class="form-control" placeholder="Pesquisar" formControlName="description"
+                    [class.is-invalid]="description.dirty && description.invalid" maxlength="250">
+            </div><br>
+            <div class="form-group col-12">
+                <label for="nameInput">Permissões
+                    <div class="invalid" *ngIf="form.errors?.invalidPermissions">
+                        No minímo uma permissão é obrigatório
+                    </div>
+                </label>
+                <div class="form-check" *ngFor="let actionParent of listActions; let odd = odd">
+                    <div class="col-6 float-left" *ngIf="!odd">
+                        <div>
+                            <input class="form-check-input" type="checkbox" [value]="actionParent.id"
+                                [id]="actionParent.id" [checked]="actionParent.allActions || actionParent.checked"
+                                (change)="selectAllChildrenOfParentAction(actionParent)">
+                            <label class="form-check-label" [for]="actionParent.id">
+                                {{ actionParent.description }}
+                            </label>
+                        </div>
+                        <div class="form-check alignment" *ngFor="let action of actionParent.actions">
+                            <input class="form-check-input" type="checkbox" [value]="action.id" [id]="action.id"
+                                [checked]="actionParent.allActions || action.checked"
+                                (change)="selectAction(action, actionParent.id)">
+                            <label class="form-check-label" [for]="action.id">
+                                {{ action.description }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-6 float-right" *ngIf="odd">
+                        <div>
+                            <input class="form-check-input" type="checkbox" [value]="actionParent.id"
+                                [id]="actionParent.id" [checked]="actionParent.allActions || actionParent.checked"
+                                (change)="selectAllChildrenOfParentAction(actionParent)">
+                            <label class="form-check-label" [for]="actionParent.id">
+                                {{ actionParent.description }}
+                            </label>
+                        </div>
+                        <div class="form-check alignment" *ngFor="let action of actionParent.actions;">
+                            <input class="form-check-input" type="checkbox" [value]="action.id" [id]="action.id"
+                                [checked]="actionParent.allActions || action.checked"
+                                (change)="selectAction(action, actionParent.id)">
+                            <label class="form-check-label" [for]="action.id">
+                                {{ action.description }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-success btn-cancel" (click)="modal.dismiss(); cancelAction();">
+                <span class="fa fa-times"></span>
+                Cancelar
+            </button>
+            <button type="button" class="btn btn-outline-success btn-save" (click)="onSubmit()">
+                <span class="far fa-save"></span>
+                Salvar
+            </button>
+        </div>
+    </form>
+</ng-template>

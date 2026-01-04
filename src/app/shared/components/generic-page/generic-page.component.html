@@ -1,0 +1,33 @@
+<div class="row">
+    <div class="col">
+        <h3>{{ config?.title }}</h3>
+    </div>
+    <div class="col">
+        <button type="button" class="float-right ml-2 btn" *ngFor="let btn of config?.headerButtons"
+            [ngClass]="btn.type" (click)="btn.callback()">
+            <span class="fa" [ngClass]="btn.icon" *ngIf="btn.icon"></span>
+            {{ btn.text }}
+        </button>
+    </div>
+</div>
+
+<div class="row" *ngIf="config?.table">
+    <div class="col">
+        <app-generic-table [tableData]="tableData" [config]="config?.table"></app-generic-table>
+    </div>
+</div>
+<br>
+
+<div class="row">
+    <div class="col">
+        <ngb-pagination [collectionSize]="total" (pageChange)="getData($event)" [(page)]="page"
+            [pageSize]="config.itemsPerPage" [maxSize]="7" [rotate]="true" [ellipses]="false"></ngb-pagination>
+    </div>
+    <div class="col generic-page-footer">
+        <button type="button" class="float-right ml-2 btn" *ngFor="let btn of config?.footerButtons"
+            [ngClass]="btn.type" (click)="btn.callback()">
+            <span class="fas" [ngClass]="btn.icon" *ngIf="btn.icon"></span>
+            {{ btn.text }}
+        </button>
+    </div>
+</div>

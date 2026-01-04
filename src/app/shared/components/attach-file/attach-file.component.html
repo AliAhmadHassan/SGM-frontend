@@ -1,0 +1,15 @@
+<label for="file">{{ title }}</label>
+<div class="custom-file">
+  <input type="file" class="custom-file-input" id="file" 
+        (change)="emitChange($event)" 
+        [multiple]="multiple">
+  <label class="custom-file-label" for="file">
+    <div class="files" #filenames>
+      <p class="m-1">Selecione um arquivo</p>
+    </div>
+    <button type="button" class="btn btn-outline-success btn-filter mr-auto">
+      <span class="fas fa-pen"></span>
+      Anexar
+    </button>
+  </label>
+</div>

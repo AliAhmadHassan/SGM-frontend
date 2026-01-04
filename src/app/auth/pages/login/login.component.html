@@ -1,0 +1,53 @@
+<app-alert></app-alert>
+<div class="row bodyLogin overflow-hidden">
+    <div class="col-6">
+        <div class="img-login img-fluid float-left"></div>
+    </div>
+    <div class="col-6 text-center p-0">
+
+        <div class="d-flex flex-column text-center">
+            <img src="assets/logos/logo_sgm.svg" class="img-fluid logo-sgm" alt="logo-svg">
+            <label class="description-system mt-3">Sistema de Gestão de Materiais</label>
+        </div>
+        <form (ngSubmit)="onSubmit()" [formGroup]="form">
+
+
+            <div class="form-group row justify-content-center mt-5">
+                <div class="formLogin form-inline col-6">
+                    <span class="icon-login far fa-envelope"></span>
+                    <input type="email" class="form-control" formControlName="email" placeholder="Email" name="email"
+                        #firstInput maxlength="250" required>
+                </div>
+            </div>
+
+            <div class="form-group password row justify-content-center">
+                <div class="formLogin form-inline col-6">
+                    <span class="icon-login fa fa-key"></span>
+                    <input type="password" class="form-control" formControlName="password" id="password"
+                        placeholder="Password" icon="fa fa-envelope" maxlength="100" required>
+                </div>
+            </div>
+
+            <div class="form-group password row justify-content-center">
+                <div class="col-6 justify-content-between d-flex form-buttons">
+                    <div class="form-check">
+                        <input class="form-check-input check-box" type="checkbox" formControlName="remember">
+                        <span class="form-check-label">Lembrar dados</span>
+                    </div>
+
+                    <div>
+                        <button type="submit" [disabled]="loading$ | async" class="col-12 btn float-right">
+                            <span class="fa fa-sign-in"></span>
+                            {{ (loading$ | async) ? 'Carregando...' : 'Entrar' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <img src="assets/logos/logo_sk.svg" class="img-fluid mt-5 mb-4 logo-sk" alt="logo-sk">
+            <div class="row justify-content-center">
+                <label class="copyright">SBKEI-SK - Todos os direitos reservados</label>
+            </div>
+        </form>
+    </div>
+</div>

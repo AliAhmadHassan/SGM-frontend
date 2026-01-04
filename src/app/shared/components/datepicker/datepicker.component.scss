@@ -1,0 +1,47 @@
+.ngb-dp-week {
+  .ngb-dp-weekday {
+    color: #2A579A;
+  }
+}
+
+.ngb-dp-arrow {
+  .btn-link {
+    color: #2A579A;
+  }
+}
+
+.input-group-append {
+  .btn-outline-secondary {
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-color: #CED4DA;
+  }
+  .btn-outline-secondary:hover {
+    color: #fff;
+    background-color: #2A579A;
+    border-color: #2A579A;
+  }
+}
+
+.input-group > .form-control:not(:first-child), .input-group > .custom-select:not(:first-child) {
+  background-color: #fff;
+}
+
+.input-group > .form-control:hover, .input-group > .custom-select:focus, .input-group > .custom-file .custom-file-input:focus ~ .custom-file-label {
+  z-index: 3;
+  cursor: pointer;
+}
+
+label {
+  font-size: 16px !important;
+  color: #666666;
+}
+
+/* Datepicker popup icon */
+button.calendar,
+button.calendar:active {
+  width: 2.75rem;
+  background-repeat: no-repeat;
+  background-size: 23px;
+  background-position: center;
+}

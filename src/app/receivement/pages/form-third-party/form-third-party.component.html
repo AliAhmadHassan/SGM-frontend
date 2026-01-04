@@ -1,0 +1,340 @@
+<div class="container">
+  <h3 ngbAutofocus>Recebimento de Material de Terceiros</h3>
+  <form [formGroup]="form" class="needs-validation" (ngSubmit)="onSubmit()">
+
+    <div class="form-group d-flex flex-lg-wrap">
+      <div class="form-group col-6">
+        <label for="provider">Fornecedor</label>
+        <ng-select bindLabel="text" bindValue="id" formControlName="provider" placeholder="Selecione">
+          <ng-option *ngFor="let data of providers" [value]="data.id">{{ data.text }}</ng-option>
+        </ng-select>
+      </div>
+      <div class="form-group col-2">
+        <label for="">Documento Entrada</label>
+        <input type="number" class="form-control" placeholder="Nota Fiscal" maxlength="9"
+          oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+          disabled>
+      </div>
+      <div class="form-group col-2">
+        <label for="documentNumber">Número Documento</label>
+        <input type="number" class="form-control" placeholder="Nota Documento" maxlength="100"
+          formControlName="documentNumber">
+      </div>
+      <div class="form-group col-2">
+        <app-datepicker labelName="Data Documento" (dateChange)="setDocumentDate($event)"
+          formControlName="documentDate">
+        </app-datepicker>
+      </div>
+      <div class="form-group col-4">
+        <label for="complement">Complemento</label>
+        <input type="text" class="form-control" placeholder="Complemento" maxlength="100" formControlName="complement">
+      </div>
+      <div class="form-group col-4">
+        <app-datepicker labelName="Data Recebimento" (dateChange)="setReceivementDate($event)"
+          formControlName="receivementDate"></app-datepicker>
+      </div>
+      <div class="form-group col-4">
+        <label for="receiverUser">Recebido por</label>
+        <ng-select bindLabel="text" bindValue="id" formControlName="receiverUser" placeholder="Selecione">
+          <ng-option *ngFor="let responsible of responsibles" [value]="responsible.id">{{ responsible.text }}
+          </ng-option>
+        </ng-select>
+      </div>
+    </div>
+
+    <table class="table table-details">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Cod. Material</th>
+          <th>Descrição</th>
+          <th>Un.</th>
+          <th>Qtd. Recebimento</th>
+          <th>Preço Unitário</th>
+          <th>Preço Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of itemList ; let i = index">
+          <td> {{ i + 1 }} </td>
+          <td>
+            <ng-select [items]="materials" bindLabel="code" bindValue="code" (search)="customSearchFn($event)"
+              (clear)="customSearchFn({ term: '' })" (change)="setMaterial($event, i)">
+            </ng-select>
+          </td>
+          <td>{{ item.description }}</td>
+          <td>{{ item.unity }}</td>
+          <td>
+            <input type="number" class="form-control" placeholder="Quantidade" maxlength="100"
+              (change)="setQuantity($event, i)">
+          </td>
+          <td>
+            <input type="number" class="form-control" placeholder="Preço" maxlength="100"
+              (change)="setUnityPrice($event, i)">
+          </td>
+          <td>R$ {{ item.receivementAmount * item.unityPrice }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="form-group col-12">
+      <button type="button" class="btn btn-outline-success btn-block btn-input mt-3" (click)="addNewItem()">
+        <span class="fa fa-plus"></span> Novo Item
+      </button>
+    </div>
+
+    <div class="form-group d-flex flex-lg-wrap">
+      <div class="form-group col-4">
+        <label for="vehiclePlate">Placa do Veículo</label>
+        <input type="text" class="form-control" placeholder="ADG-1234" maxlength="8" mask="SSS-0A00"
+          formControlName="vehiclePlate">
+      </div>
+      <div class="form-group col-4">
+        <label for="driverName">Nome do Motorista</label>
+        <input type="text" class="form-control" placeholder="Nome do Motorista" maxlength="100"
+          formControlName="driverName">
+      </div>
+      <div class="form-group col-4">
+        <label for="driverTelephone">Telefone do Motorista</label>
+        <input type="text" class="form-control" placeholder="Digite o Telefone" mask="{{ maskTel }}"
+          (ngModelChange)="telephoneFilter=$event;maskTelephone()" formControlName="driverTelephone" maxlength="18">
+      </div>
+    </div>
+
+    <div class="form-group col-12">
+      <label for="emails">Incluir E-mails</label>
+      <ng-select [addTag]="true" [multiple]="true" placeholder="Selecione" formControlName="emails">
+      </ng-select>
+    </div>
+
+    <div class="form-group col-12">
+      <label for="comments">Observações</label>
+      <textarea rows="4" cols="50" class="form-control" placeholder="Observações" maxlength="300"
+        formControlName="comments"></textarea>
+    </div>
+
+    <div class="form-group col">
+      <div class="row">
+        <div class="col">
+          <app-attach-file title="Fotos do Recebimento" [multiple]="true" (change)="photosHandler($event.target.files)">
+          </app-attach-file>
+        </div>
+        <div class="col">
+          <app-attach-file title="Anexos Adicionais" [multiple]="true"
+            (change)="attachmentsHandler($event.target.files)">
+          </app-attach-file>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-success btn-filter mr-auto" (click)="saveAsDraft();">
+        <span class="fas fa-pen"></span> Salvar como Rascunho
+      </button>
+      <button type="button" class="btn btn-outline-success btn-divergence">
+        <span class="fa fa-exclamation"></span> Divergência
+      </button>
+      <button type="button" class="btn btn-outline-success btn-save" (click)="reviewOrder();">
+        <span class="fas fa-eye"></span> Revisar
+      </button>
+    </div>
+
+  </form>
+</div>
+
+
+
+
+
+<ng-template #finalDetailsModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title blue-title" id="modal-basic-title" ngbAutofocus>Pedido </h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss(); cancelAction();">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="row">
+    <div class="col-6">
+      <div class="card double-card-one">
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <span>Tipo</span>
+              <p>Material de Terceiros</p>
+            </div>
+            <div class="col">
+              <span>Registrado por</span>
+              <p>{{ (user$ | async)?.Username | abbreviateName }}</p>
+            </div>
+            <div class="col">
+              <span>Data Registro</span>
+              <p>{{ date | date: 'dd/MM/yyyy' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-6">
+      <div class="card double-card-two">
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <span>Instalação Recebimento</span>
+              <!-- <p>{{ (installation$ | async) }}</p> -->
+              <p>-</p>
+            </div>
+            <div class="col">
+              <span>Recebido por</span>
+              <p>{{ this.receiverUserResult | abbreviateName }}</p>
+            </div>
+            <div class="col">
+              <span>Data Recebimento</span>
+              <p>{{ this.receivementDateResult | date: 'dd/MM/yyyy' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-6">
+      <div class="card double-card-one">
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <span>Doc. Entrada</span>
+              <p>Nota Fiscal</p>
+            </div>
+            <div class="col">
+              <span>Número</span>
+              <p>{{ this.documentNumberResult | emptyField }}</p>
+            </div>
+            <div class="col">
+              <span>Data</span>
+              <p>{{ this.receivementDateResult | date: 'dd/MM/yyyy' }}</p>
+            </div>
+            <div class="col">
+              <span>Complemento</span>
+              <p>{{ this.complementResult | emptyField }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-6">
+      <div class="card double-card-two">
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <span>Nome Fornecedor - CNPJ</span>
+              <p>{{ providerResult }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <table class="table modal-table">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Cod. Material</th>
+        <th>Descrição</th>
+        <th>Un.</th>
+        <th>Qtd. Recebimento</th>
+        <th>Preço Unitário</th>
+        <th>Preço Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of itemList ; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ item.materialCode }}</td>
+        <td>{{ item.description }}</td>
+        <td>{{ item.unity }}</td>
+        <td>{{ item.receivementAmount }}</td>
+        <td>{{ item.unityPrice }}</td>
+        <td>R$ {{ item.receivementAmount * item.unityPrice }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="row">
+    <div class="col-6">
+      <app-review-archive-list componentTitle='Fotos de Recebimento' componentClass="card double-card-one"
+        [archiveList]="receivementPhotos"></app-review-archive-list>
+    </div>
+    <div class="col-6">
+      <app-review-archive-list componentTitle='Anexos Adicionais' componentClass="card double-card-two"
+        [archiveList]="additionalAttachments"></app-review-archive-list>
+    </div>
+  </div>
+
+  <div class="card single-card">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-1">
+          <img src="../../../../assets/images/icone_recebimento.svg" alt="Recebimento">
+        </div>
+        <div class="col-3">
+          <span>Placa do Veículo</span>
+          <p>{{ this.vehiclePlateResult | vehiclePlate }}</p>
+        </div>
+        <div class="col-5">
+          <span>Nome do Motorista</span>
+          <p>{{ this.driverNameResult | abbreviateName }}</p>
+        </div>
+        <div class="col-3">
+          <span>Telefone do Motorista</span>
+          <p>{{ this.driverTelephoneResult | telephoneNumber }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card single-card card-email">
+    <div class="card-body">
+      <div class="row">
+        <div class="col">
+          <span>E-mails</span>
+          <p>{{ this.emailsResult }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card single-card card-comments">
+    <div class="card-body">
+      <div class="row">
+        <div class="col">
+          <span>Observações</span>
+          <p>{{ this.commentsResult | emptyField }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-success btn-export"
+      (click)="genericPage.getData(); modal.dismiss(); cancelAction();">
+      <span class="fa fa-share-square"></span> Exportar
+    </button>
+    <button type="button" class="btn btn-outline-success btn-print mr-auto"
+      (click)="genericPage.getData(); modal.dismiss();">
+      <span class="fa fa-print"></span> Imprimir
+    </button>
+    <button type="button" class="btn btn-outline-success btn-cancel" (click)="modal.dismiss();">
+      <span class="fa fa-times"></span> Fechar
+    </button>
+    <button type="button" class="btn btn-outline-success btn-create">
+      <span class="fas fa-check"></span> Criar CRM
+    </button>
+    <button type="button" class="btn btn-outline-success btn-save" (click)="SaveReceivement(); modal.dismiss();">
+      <span class="fas fa-check"></span> Finalizar
+    </button>
+  </div>
+</ng-template>

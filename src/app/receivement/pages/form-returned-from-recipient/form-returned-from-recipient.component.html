@@ -1,0 +1,241 @@
+<div class="container">
+  <h3 ngbAutofocus>Criar Devolução</h3>
+  <form [formGroup]="form" class="needs-validation" (ngSubmit)="onSubmit()">
+  <div class="form-group d-flex flex-lg-wrap">
+    <div class="form-group col-2">
+      <label for="">Código</label>
+      <input type="text" class="form-control" placeholder="Código" maxlength="100" disabled>
+    </div>
+    <div class="form-group col-2">
+      <label for="">Nome</label>
+      <input type="text" class="form-control" placeholder="Nome" maxlength="100" disabled>
+    </div>
+    <div class="form-group col-2">
+      <label for="">Tipo</label>
+      <input type="text" class="form-control" placeholder="Tipo" maxlength="100" disabled>
+    </div>
+    <div class="form-group col-2">
+      <label for="">Endereço</label>
+      <input type="text" class="form-control" placeholder="Endereço" maxlength="100" disabled>
+    </div>
+    <div class="form-group col-2">
+      <label for="resposableId">Responsável Retirada</label>
+      <ng-select bindLabel="text" bindValue="id" formControlName="userResponsableId" placeholder="Selecione">
+        <ng-option *ngFor="let responsible of responsibles" [value]="responsible.id">{{ responsible.text }}
+        </ng-option>
+      </ng-select>
+    </div>
+    <div class="form-group col-2">
+      <label for="">Data Recebimento</label>
+      <input type="text" class="form-control" placeholder="Data Recebimento" maxlength="100" disabled>
+    </div>
+  </div>
+
+
+  <table class="table table-details">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Cod. Material</th>
+        <th>Descrição</th>
+        <th>Un.</th>
+        <th>Qtd. Devolvida</th>
+        <th>Status</th>
+        <th>Motivo</th>
+        <th>Controle Adicional</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of itemList ; let i = index">
+        <td> {{ i + 1 }} </td>
+        <td>
+          <ng-select [items]="materials" bindLabel="code" bindValue="code" (search)="customSearchFn($event)"
+            (clear)="customSearchFn({ term: '' })" (change)="setMaterial($event, i)">
+          </ng-select>
+        </td>
+        <td>{{ item.description }}</td>
+        <td>{{ item.unity }}</td>
+        <td>
+          <input type="number" class="form-control" placeholder="Quantidade" maxlength="100"
+            (keyup)="setQuantity($event, i)">
+        </td>
+        <td>
+          <ng-select [items]="statusList" bindLabel="text" bindValue="id" (change)="setMaterialStatus($event, i)">
+          </ng-select>
+        </td>
+        <td>
+          <ng-select [items]="statusList" bindLabel="text" bindValue="id" (change)="setReasons($event, i)">
+          </ng-select>
+        </td>
+        <td>
+          <input type="text" class="form-control" placeholder="Adicional Controle" maxlength="100"
+            (keyup)="setAdditionalControl($event, i)">
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="form-group col-12">
+    <button type="button" class="btn btn-outline-success btn-block btn-input mt-3" (click)="addNewItem()">
+      <span class="fa fa-plus"></span> Novo Item
+    </button>
+  </div>
+
+  <div class="form-group col-12">
+    <label for="emails">Incluir E-mails</label>
+    <ng-select [addTag]="true" [multiple]="true" placeholder="Selecione" formControlName="emails">
+    </ng-select>
+  </div>
+
+  <div class="form-group col-12">
+    <label for="notes">Observações</label>
+    <textarea rows="4" cols="50" class="form-control" placeholder="Observações" maxlength="300"
+      formControlName="notes"></textarea>
+  </div>
+
+  <div class="col">
+    <app-attach-file title="Anexos Adicionais" [multiple]="true" (change)="attachmentsHandler($event.target.files)">
+    </app-attach-file>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-success btn-filter mr-auto" (click)="saveAsDraft()">
+      <span class="fas fa-pen"></span>
+      Salvar como Rascunho
+    </button>
+    <button type="button" class="btn btn-outline-success btn-cancel">
+      <span class="fa fa-times"></span> Cancelar
+    </button>
+    <button type="button" class="btn btn-outline-success btn-save" (click)="reviewOrder()">
+      <span class="fas fa-eye"></span> Revisar
+    </button>
+  </div>
+  </form>
+</div>
+
+<ng-template #finalDetailsModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title blue-title" id="modal-basic-title" ngbAutofocus>RMA </h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss();">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="row">
+    <div class="col-6">
+      <div class="card double-card-one">
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <span class="information-title">Tipo</span>
+              <p class="information-item">Devolução Destinatário</p>
+            </div>
+            <div class="col">
+              <span class="information-title">Registrado por</span>
+              <p class="information-item">{{ this.userResponsableResult | abbreviateName  }}</p>
+            </div>
+            <div class="col">
+              <span class="information-title">Data Registro</span>
+              <p class="information-item">{{ date | date: 'dd/MM/yyyy' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-6">
+      <div class="card double-card-two">
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <span class="information-title">Instalação Origem</span>
+              <p class="information-item">-</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card single-card single-card--bottom-line">
+    <div class="card-body single-card__body">
+      <div class="row">
+        <div class="col">
+          <span class="information-title">Instalação Destino</span>
+          <p class="information-item">-</p>
+        </div>
+        <div class="col">
+          <span class="information-title">CNPJ Destino</span>
+          <p class="information-item">-</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <table class="table table-striped modal-table">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Cod. Material</th>
+        <th>Descrição</th>
+        <th>Un.</th>
+        <th>Devolvido</th>
+        <th>Status</th>
+        <th>Motivo</th>
+        <th>Adicional</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of itemList ; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ item.materialCode }}</td>
+        <td>{{ item.description }}</td>
+        <td>{{ item.unity }}</td>
+        <td>{{ item.amount }}</td>
+        <td>{{ item.materialStatusId }}</td>
+        <td>{{ item.devolutionReasonId }}</td>
+        <td>{{ item.additionalController }}</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div class="row">
+    <div class="col">
+      <app-review-archive-list componentTitle='Visualizar Anexos' componentClass="card single-card"
+        [archiveList]="additionalAttachments"></app-review-archive-list>
+    </div>
+  </div>
+
+  <div class="card single-card single-card--email">
+    <div class="card-body single-card__body">
+      <div class="row">
+        <div class="col">
+          <span class="information-title">E-mails</span>
+          <p class="information-item">{{ this.emailsResult | emptyField }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card single-card">
+    <div class="card-body">
+      <div class="row">
+        <div class="col">
+          <span class="information-title">Observações</span>
+          <p class="information-item">{{ this.commentsResult | emptyField }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-success btn-print mr-auto"
+      (click)="genericPage.getData(); modal.dismiss()">
+      <span class="fa fa-print"></span> Imprimir
+    </button>
+    <button type="button" class="btn btn-outline-success btn-cancel" (click)="modal.dismiss()">
+      <span class="fa fa-times"></span> Fechar
+    </button>
+    <button type="button" class="btn btn-outline-success btn-save" (click)="modal.dismiss()">
+      <span class="fas fa-check"></span> Receber
+    </button>
+  </div>
+</ng-template>

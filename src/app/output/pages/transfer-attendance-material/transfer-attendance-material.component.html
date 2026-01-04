@@ -1,0 +1,190 @@
+<main role="main" class="container">
+    <app-generic-page [config]="config" #genericPage></app-generic-page>
+</main>
+
+<ng-template #filterModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title" ngbAutofocus>Filtros</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss() ; clearFilters()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body d-flex flex-lg-wrap">
+        <div class="row rowFilter">
+            <div class="form-group col-3">
+                <label for="orders">STM</label>
+                <input type="text" class="form-control" placeholder="Digite RMA" [(ngModel)]="stmFilter"
+                    maxlength="100">
+            </div>
+            <div class="form-group col-3">
+                <app-datepicker labelName="Data de Emissão STM" [(date)]="initialDateFilter" buttonText="De">
+                </app-datepicker>
+            </div>
+            <div class="form-group col-2">
+                <app-datepicker labelName="&nbsp;" [(date)]="finishDateFilter" buttonText="Até">
+                </app-datepicker>
+            </div>
+            <div class="form-group col-4">
+                <label for="status">Status STM</label>
+                <ng-select [items]="listStatus" bindLabel="text" bindValue="text" [(ngModel)]="statusFilter"
+                    placeholder="Selecione">
+                </ng-select>
+            </div>
+        </div>
+        <div class="row rowFilter">
+            <div class="col-6">
+                <label for="status">Requisitante</label>
+                <ng-select [items]="listRequiredUser" bindLabel="text" bindValue="text" [(ngModel)]="requiredUserFilter"
+                    placeholder="Selecione">
+                </ng-select>
+            </div>
+            <div class="col-6">
+                <label for="status">Aprovador</label>
+                <ng-select [items]="listWithdrawUser" bindLabel="text" bindValue="text" [(ngModel)]="withdrawUserFilter"
+                    placeholder="Selecione">
+                </ng-select>
+            </div>
+        </div>
+        <div class="row rowFilter">
+            <div class="col-6">
+                <label for="status">Instalação Origem</label>
+                <ng-select [items]="listInstallationSource" bindLabel="text" bindValue="text"
+                    [(ngModel)]="installationSourceFilter" placeholder="Selecione">
+                </ng-select>
+            </div>
+            <div class="col-6">
+                <label for="status">Instalação Destino</label>
+                <ng-select [items]="listInstallationDestiny" bindLabel="text" bindValue="text"
+                    [(ngModel)]="installationDestinyFilter" placeholder="Selecione">
+                </ng-select>
+            </div>
+        </div>
+        <div class="row rowFilter">
+            <div class="col-6">
+                <label for="status">Código Material</label>
+                <ng-select [items]="listMaterialCode" bindLabel="text" bindValue="text" [(ngModel)]="materialCodeFilter"
+                    placeholder="Selecione">
+                </ng-select>
+            </div>
+            <div class="col-6">
+                <label for="status">Descrição</label>
+                <input type="text" class="form-control" placeholder="Preencher" [(ngModel)]="materialDescriptionFilter"
+                    maxlength="100">
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-success btn-clear-filter mr-auto p-2 bd-highlight"
+            (click)="clearFilters(); genericPage.getData();">
+            <span class="fa fa-times-circle"></span>
+            Limpar Filtros
+        </button>
+        <button type="button" class="btn btn-outline-success btn-filter"
+            (click)="genericPage.getData(); modal.dismiss();">
+            <span class="fa fa-search"></span>
+            Pesquisar
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #detailsModal let-modal>
+    <div *ngIf="data">
+        <div class="modal-header">
+            <h4 class="modal-title blue-title" id="modal-basic-title" ngbAutofocus>Transferência {{data.stm_Id}}</h4>
+            <button type="button" class="close" aria-label="Close" (click)="modal.dismiss();">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <div class="card single-card">
+            <div class="card-body single-card__body">
+                <div class="row">
+                    <div class="col-3">
+                        <span class="information-title">Data Emissão</span>
+                        <p class="information-item">{{ data.stmDtCriacao | date: 'dd/MM/yyyy' }}</p>
+                    </div>
+                    <div class="col-3">
+                        <span class="information-title">Status</span><br/>
+                        <app-status [status]="data.stsDescricao"></app-status>
+                    </div>
+                    <div class="col-3">
+                        <span class="information-title">Requisitante</span>
+                        <p class="information-item">{{ data.usuNomeSolicitante }}</p>
+                    </div>
+                    <div class="col-3">
+                        <span class="information-title">Aprovador</span>
+                        <p class="information-item">{{ data.usuNomeAprovador }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="col-6">
+                <div class="card double-card-first-position">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <span class="information-title">Instalação Origem</span>
+                                <p class="information-item">{{ data.insNomeDestino }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card double-card-second-position">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12">
+
+                                <span class="information-title">Instalação Destino</span>
+                                <p class="information-item">{{ data.insNomeDestino }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+         <table class="table table-striped rounded-top modal-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Cod. Material</th>
+                    <th>Descrição</th>
+                    <th>Un.</th>
+                    <th>Solicitado</th>
+                    <th>Atendido</th>
+                    <th>Pendente</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of data.materials">
+                    <td>{{ item.item }}</td>
+                    <td>{{ item.materialCode }}</td>
+                    <td>{{ item.description }}</td>
+                    <td>{{ item.unity }}</td>
+                    <td>{{ item.amount }}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="modal-footer d-flex">
+            <button type="button" class="btn btn-outline-success btn-cancel" (click)="modal.dismiss();">
+                <span class="fa fa-times"></span>
+                Cancelar
+            </button>
+            <button  type="button"
+                class="btn btn-outline-success btn-save" (click)="modal.dismiss(); changePage()">
+                <span class="fa fa-upload"></span>
+                Criar Saida STM
+            </button>
+        </div>
+    </div>
+</ng-template>

@@ -1,0 +1,30 @@
+enum Permissions {
+    RecebimentoMaterialNotaEPedido = 2,
+    RecebimentoMaterialTransferenciaInstalacoes = 3,
+    RecebimentoMaterialFornecedorComNotaSemPedido = 4,
+    RecebimentoMaterialTerceiros = 5,
+    RecebimentoMaterialDevolvidoDestinatario = 6,
+    RecebimentoMaterialDevolvidoGuardaProvisoria = 7,
+    CriarDocumentoRma = 9,
+    CriarDocumentoTransferenciaInstalacoes = 10,
+    AprovarRma = 11,
+    AprovarTransferencia = 11,
+    SaidaMaterialAtendimentoRma = 12,
+    SaidaMaterialDiretaDestinatario = 13,
+    SaidaMaterialDiretaTransferencia = 14,
+    SaidaMaterialDiretaGuardaProvisoria = 15,
+    SaidaMaterialDiretaDevolucaoTerceiros = 16,
+    ConsultarMateriais = 18,
+    SaldoEstoque = 19,
+    ConsultarCrmRecebimentoNf = 20,
+    Materiais = 22,
+    Enderecos = 23,
+    Fornecedores = 24,
+    Instalacoes = 25,
+    Projetos = 26,
+    Filiais = 27,
+    Perfis = 29,
+    Usuarios = 30
+}
+
+export default Permissions;

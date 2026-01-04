@@ -1,0 +1,18 @@
+version: '3'
+services:
+  front-fase2:
+    image: nexusdocker.luxfacta.com/luxfacta/projetos/aceite/sbei-sk-sgm-front
+    networks:
+      - traefik_net
+    environment:
+      - TZ=America/Sao_Paulo
+    labels:
+      - "traefik.frontend.rule=Host:sgm-dev.luxfacta.com"
+      - "traefik.port=80"
+      - "traefik.docker.network=traefik_net"
+      - "traefik.backend=sgmfront"
+      - "traefik.frontend.entryPoints=http,https"
+networks:
+ traefik_net:
+  external:
+   name: traefik_net

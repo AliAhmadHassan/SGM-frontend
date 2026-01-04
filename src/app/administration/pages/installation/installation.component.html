@@ -1,0 +1,154 @@
+<main role="main" class="container">
+    <app-generic-page [config]="config" #genericPage></app-generic-page>
+</main>
+
+<ng-template #filterModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Filtros</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss() ; clearFilters()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body d-flex flex-lg-wrap">
+        <div class="form-group col-4">
+            <label for="code">Código</label>
+            <input type="number" class="form-control" placeholder="Digite o código" [(ngModel)]="codeFilter"
+                maxlength="9" ngbAutofocus
+                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);">
+        </div>
+        <div class="form-group col-4">
+            <label for="name">Nome</label>
+            <input type="text" class="form-control" placeholder="Digite o Nome" [(ngModel)]="nameFilter"
+                maxlength="128">
+        </div>
+        <div class="form-group col-4">
+            <label for="description">Descrição</label>
+            <input type="text" class="form-control" placeholder="Digite a Descrição" [(ngModel)]="descriptionFilter"
+                maxlength="256">
+        </div><br>
+        <div class="form-group col-6">
+            <label for="installationType">Tipo</label>
+            <ng-select [items]="listInstallationType" bindLabel="text" placeholder="Selecione" [(ngModel)]="typeFilter">
+            </ng-select>
+        </div>
+        <div class="form-group col-6">
+            <label for="project">Projeto</label>
+            <ng-select [items]="listProject" bindLabel="text" [(ngModel)]="projectFilter" placeholder="Selecione">
+            </ng-select>
+        </div><br>
+        <div class="form-group col-6">
+            <label for="address">Endereço Complementar</label>
+            <ng-select [items]="listAddress" bindLabel="text" [(ngModel)]="addressFilter" placeholder="Selecione">
+            </ng-select>
+        </div>
+        <div class="form-group col-6">
+            <label for="thirdMaterialPermissionInput">Permite Material de Terceiros</label><br>
+            <div class="form-check-inline">
+                <input class="form-check-input" type="radio" name="thirdMaterialPermissionInput" value="true"
+                    [(ngModel)]="thirdMaterialPermissionFilter" id="checkbox-yes">
+                <label class="form-check-label" for="checkbox-yes">Sim</label>
+            </div>
+            <div class="form-check-inline">
+                <input class="form-check-input" type="radio" name="thirdMaterialPermissionInput" value="false"
+                    [(ngModel)]="thirdMaterialPermissionFilter" id="checkbox-nao">
+                <label class="form-check-label" for="checkbox-nao">Não</label>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-success btn-clear-filter mr-auto p-2 bd-highlight"
+            (click)="clearFilters(); genericPage.getData();">
+            <span class="fa fa-times-circle"></span>
+            Limpar Filtros
+        </button>
+        <button type="button" class="btn btn-outline-success btn-filter"
+            (click)="genericPage.getData(); modal.dismiss();">
+            <span class="fa fa-search"></span>
+            Pesquisar
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #installationModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">{{ edit ? 'Editar' : 'Nova' }} Instalação</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss(); cancelAction();">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <form class="needs-validation" [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="modal-body d-flex flex-lg-wrap">
+            <div class="form-group col-4">
+                <label for="name">Nome</label>
+                <input type="text" class="form-control" placeholder="Nome" formControlName="name"
+                    [class.is-invalid]="name.dirty && name.invalid" maxlength="128" ngbAutofocus>
+                <div class="invalid-feedback">
+                    Campo Obrigatório
+                </div>
+            </div>
+            <div class="form-group col-8">
+                <label for="description">Descrição</label>
+                <input type="text" class="form-control" placeholder="Descrição" formControlName="description"
+                    [class.is-invalid]="description.dirty && description.invalid" maxlength="256">
+            </div><br>
+            <div class="form-group col-6">
+                <label for="type">Tipo</label>
+                <ng-select [items]="listInstallationType" bindLabel="text" bindValue="id"
+                    (change)="fillInstallationTypeCombo()" formControlName="type"
+                    [class.is-invalid]="type.dirty && type.invalid" placeholder="Selecione">
+                </ng-select>
+                <div class="invalid" *ngIf="(type.dirty && type.invalid)">
+                    Campo Obrigatório
+                </div>
+            </div>
+            <div class="form-group col-6">
+                <label for="project">Projeto</label>
+                <ng-select [items]="listProject" bindLabel="text" bindValue="id" (change)="fillProjectCombo()"
+                    formControlName="project" [class.is-invalid]="project.dirty && project.invalid"
+                    placeholder="Selecione">
+                </ng-select>
+                <div class="invalid" *ngIf="(project.dirty && project.invalid)">
+                    Campo Obrigatório
+                </div>
+            </div><br>
+            <div class="form-group col-6">
+                <label for="address">Endereço Complementar</label>
+                <ng-select [items]="listAddress" bindLabel="text" bindValue="id" (change)="fillAddressCombo()"
+                    formControlName="address" [class.is-invalid]="address.dirty && address.invalid"
+                    placeholder="Selecione">
+                </ng-select>
+                <div class="invalid" *ngIf="(address.dirty && address.invalid)">
+                    Campo Obrigatório
+                </div>
+            </div>
+            <div class="form-group col-6">
+                <label for="thirdMaterialPermission">Permite Material de Terceiros</label><br>
+                <div class="form-check-inline">
+                    <input class="form-check-input" type="radio" formControlName="thirdMaterialPermission"
+                        name="thirdMaterialPermission" value="true" id="checkbox-yes">
+                    <label class="form-check-label" for="checkbox-yes">Sim</label>
+                </div>
+                <div class="form-check-inline">
+                    <input class="form-check-input" type="radio" formControlName="thirdMaterialPermission"
+                        name="thirdMaterialPermission" value="false" id="checkbox-no">
+                    <label class="form-check-label" for="checkbox-no">Não</label>
+                </div>
+                <div class="invalid" *ngIf="(thirdMaterialPermission.dirty && thirdMaterialPermission.invalid)">
+                    Campo Obrigatório
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-danger btn-cancel"
+                (click)="genericPage.getData(); modal.dismiss(); cancelAction();">
+                <span class="fa fa-times"></span>
+                Cancelar
+            </button>
+            <button type="button" class="btn btn-outline-success btn-save" (click)="onSubmit()">
+                <span class="far fa-save"></span>
+                Salvar
+            </button>
+        </div>
+    </form>
+</ng-template>

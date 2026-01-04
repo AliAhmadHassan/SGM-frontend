@@ -1,0 +1,43 @@
+<main role="main" class="container">
+    <app-generic-page [config]="config" #genericPage></app-generic-page>
+</main>
+
+<ng-template #filterModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Filtros</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss() ; clearFilters()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body d-flex flex-lg-wrap">
+        <div class="form-group col-6">
+            <label for="codeInput">Código</label>
+            <input type="number" class="form-control" id="codeInput" placeholder="Digite o Código"
+                [(ngModel)]="codeFilter" maxlength="9" ngbAutofocus
+                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);">
+        </div>
+        <!--sem filtro de unidade no banco, pendencia-->
+        <div class="form-group col-6">
+            <label for="unityInput">Unidade</label>
+            <input type="text" class="form-control" id="unityInput" placeholder="Digite a Unidade"
+                [(ngModel)]="unitFilter" maxlength="100">
+        </div><br>
+        <div class="form-group col-12">
+            <label for="descriptionInput">Descrição</label>
+            <input type="text" class="form-control" id="descriptionInput" placeholder="Digite a Descrição"
+                [(ngModel)]="descriptionFilter" maxlength="250">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-success btn-clear-filter mr-auto p-2 bd-highlight"
+            (click)="clearFilters(); genericPage.getData();">
+            <span class="fa fa-times-circle"></span>
+            Limpar Filtros
+        </button>
+        <button type="button" class="btn btn-outline-success btn-filter"
+            (click)="genericPage.getData(); modal.dismiss();">
+            <span class="fa fa-search"></span>
+            Pesquisar
+        </button>
+    </div>
+</ng-template>

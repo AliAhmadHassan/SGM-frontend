@@ -1,0 +1,233 @@
+<main role="main" class="container">
+  <app-generic-page [config]="config" #genericPage></app-generic-page>
+</main>
+
+<ng-template #filterModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title" ngbAutofocus>Filtros</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss() ; clearFilters()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body d-flex flex-lg-wrap">
+    <div class="form-group col-3">
+      <label for="stm">STM</label>
+      <input type="text" class="form-control" placeholder="Código STM" [(ngModel)]="stmFilter" maxlength="100">
+    </div>
+    <div class="form-group col-3">
+      <label for="transfer">Transferência</label>
+      <input type="text" class="form-control" placeholder="Digite a Transferência" [(ngModel)]="transferFilter"
+        maxlength="100">
+    </div>
+    <div class="form-group col-3">
+      <app-datepicker labelName="Data Início" [(date)]="initialDateFilter">
+      </app-datepicker>
+    </div>
+    <div class="form-group col-3">
+      <app-datepicker labelName="Data Fim" [(date)]="finishDateFilter">
+      </app-datepicker>
+    </div>
+    <div class="form-group col-6">
+      <label for="requester">Requisitante</label>
+      <ng-select [items]="responsibles" bindLabel="text" bindValue="id" [(ngModel)]="requiredUserFilter"
+        placeholder="Selecione" maxlength="128">
+      </ng-select>
+    </div>
+    <div class="form-group col-6">
+      <label for="approver">Aprovador</label>
+      <ng-select [items]="responsibles" bindLabel="text" bindValue="id" [(ngModel)]="aprroverUserFilter"
+        placeholder="Selecione" maxlength="128">
+      </ng-select>
+    </div>
+    <div class="form-group col-6">
+      <label for="sourceInstallation">Instalação Origem</label>
+      <ng-select [items]="installationList" bindLabel="text" bindValue="id" [(ngModel)]="installationSourceFilter"
+        placeholder="Selecione" maxlength="128">
+      </ng-select>
+    </div>
+    <div class="form-group col-6">
+      <label for="destinationInstallation">Instalação Destino</label>
+      <ng-select [items]="installationList" bindLabel="text" bindValue="id" [(ngModel)]="installationDestinyFilter"
+        placeholder="Selecione" maxlength="128">
+      </ng-select>
+    </div>
+    <div class="form-group col-6">
+      <label for="materialCode">Código Material</label>
+      <ng-select [items]="materialCodeList" bindLabel="text" bindValue="id" [(ngModel)]="materialCodeFilter"
+        placeholder="Selecione" maxlength="128">
+      </ng-select>
+    </div>
+    <div class="form-group col-6">
+      <label for="description">Descrição</label>
+      <input type="text" class="form-control" placeholder="Descrição" [(ngModel)]="materialDescriptionFilter"
+        maxlength="100">
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-success btn-clear-filter mr-auto p-2 bd-highlight"
+      (click)="clearFilters(); genericPage.getData();">
+      <span class="fa fa-times-circle"></span>
+      Limpar Filtros
+    </button>
+    <button type="button" class="btn btn-outline-success btn-filter" (click)="genericPage.getData(); modal.dismiss();">
+      <span class="fa fa-search"></span>
+      Pesquisar
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #detailsModal let-modal>
+  <div *ngIf="data">
+    <div class="modal-header">
+      <h4 class="modal-title blue-title" id="modal-basic-title" ngbAutofocus>STM {{ data.stm }}</h4>
+      <h4 class="modal-title blue-title-second" id="modal-basic-title">Transferência {{ data.transfer }}</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss();">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
+    <div class="card single-card">
+      <div class="card-body single-card__body">
+        <div class="row">
+          <div class="col-3">
+            <span class="information-title">Data Emissão</span>
+            <p class="information-item">{{ data.emissionDate | date: 'dd/MM/yyyy' }}</p>
+          </div>
+          <div class="col-2">
+            <p class="information-title">Status</p>
+            <app-status [status]="data.status"></app-status>
+          </div>
+          <div class="col-5">
+            <span class="information-title">Requisitante</span>
+            <p class="information-item">{{ data.requester }}</p>
+          </div>
+          <div class="col-2">
+            <span class="information-title">Aprovador</span>
+            <p class="information-item">{{ data.approver }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="row">
+
+      <div class="col-6">
+        <div class="card double-card-first-position">
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <span class="information-title">Instalação Origem</span>
+                <p class="information-item">{{ data.installationSource }}</p>
+              </div>
+              <div class="col">
+                <span class="information-title">CNPJ Origem</span>
+                <p class="information-item">-</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6">
+        <div class="card double-card-second-position">
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <span class="information-title">Instalação Destino</span>
+                <p class="information-item">{{ data.installationDestiny }}</p>
+              </div>
+              <div class="col">
+                <span class="information-title">CNPJ Destino</span>
+                <p class="information-item">-</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <table class="table table-striped rounded-top modal-table">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Cod. Material</th>
+          <th>Descrição</th>
+          <th>Un.</th>
+          <th>Qtd. Solic.</th>
+          <th>Transferido</th>
+          <th>Pendente STM</th>
+          <th>Valor Total</th>
+          <th>Transferência</th>
+          <th>Pendente</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- <tr>
+                <td>{{ item.item }}</td>
+                <td>{{ item.materialCode }}</td>
+                <td>{{ item.materialDescription }}</td>
+                <td>{{ item.unity }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.unitaryCost }}</td>
+                <td>{{ item.totalCost }}</td>
+                <td>{{ item.amountReceived }}</td>
+                <td>{{ item.pending }}</td>
+            </tr> -->
+      </tbody>
+    </table>
+
+    <div class="card single-card">
+      <div class="card-body single-card__body">
+        <div class="row">
+          <div class="col-1">
+            <img src="../../../../assets/images/icone_expedicao.svg" alt="Recebimento">
+          </div>
+          <div class="col">
+            <span class="information-title">Responsável Expedição</span>
+            <p class="information-item">-</p>
+          </div>
+          <div class="col">
+            <span class="information-title">Data Expedição</span>
+            <p class="information-item">-</p>
+          </div>
+          <div class="col">
+            <span class="information-title">Previsão Entrega</span>
+            <p class="information-item">-</p>
+          </div>
+          <div class="col">
+            <span class="information-title">Placa do Veículo</span>
+            <p class="information-item">-</p>
+          </div>
+          <div class="col">
+            <span class="information-title">Nome do Motorista</span>
+            <p class="information-item">-</p>
+          </div>
+          <div class="col">
+            <span class="information-title">Telefone do Motorista</span>
+            <p class="information-item">-</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer d-flex">
+      <button type="button" class="btn btn-outline-success btn-export">
+        <span class="fa fa-share-square"></span>
+        Exportar
+      </button>
+      <button type="button" class="btn btn-outline-success btn-print mr-auto">
+        <span class="fa fa-print"></span>
+        Imprimir
+      </button>
+      <button type="button" class="btn btn-outline-success btn-cancel" (click)="genericPage.getData(); modal.dismiss();">
+        <span class="fa fa-times"></span>
+        Fechar
+      </button>
+      <button type="button" class="btn btn-outline-success btn-save" (click)="modal.dismiss(); changePage()">
+        <span class="fa fa-download"></span>
+        Receber
+      </button>
+    </div>
+  </div>
+</ng-template>

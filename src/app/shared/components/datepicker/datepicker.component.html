@@ -1,0 +1,11 @@
+<label for="invoiceDate">{{labelName}}</label>
+<div class="input-group">
+  <div class="input-group-append">
+    <button class="btn btn-outline-secondary" (click)="d1.toggle()" type="button">
+      <span *ngIf="buttonText == null" class="far fa-calendar-alt"></span>
+      {{buttonText}}
+    </button>
+  </div>
+  <input class="form-control" placeholder="dd/mm/aaaa" name="d1" [(ngModel)]="date" (click)="d1.toggle()"
+    (dateSelect)="SendDate(date)" ngbDatepicker #d1="ngbDatepicker" maxlength="10" readonly="readonly">
+</div>

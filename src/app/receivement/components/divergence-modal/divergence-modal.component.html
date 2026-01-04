@@ -1,0 +1,58 @@
+<app-modal header="Criar Divergência" [size]="modalSize.EXTRALARGE">
+  <form class="needs-validation" [formGroup]="divergenceForm" (ngSubmit)="onSubmit()">
+    <div class="modal-body d-flex flex-lg-wrap">
+      <div class="form-group col-6">
+        <label for="type">Tipo de Divergência</label>
+        <ng-select [items]="divergenceTypeList" bindLabel="text" bindValue="id" (change)="fillDivergenceCombo()"
+          formControlName="type" [class.is-invalid]="type.dirty && type.invalid" placeholder="Selecione">
+        </ng-select>
+        <div class="invalid" *ngIf="(type.dirty && type.invalid)">
+          Campo Obrigatório
+        </div>
+      </div>
+      <div class="form-group col-6">
+        <label for="description">Descrição da Divergência</label>
+        <input type="text" class="form-control" placeholder="Descrever" maxlength="256" formControlName="description"
+          [class.is-invalid]="description.dirty && description.invalid">
+        <div class="invalid-feedback">
+          Campo Obrigatório
+        </div>
+      </div>
+      <div class="form-group col-12">
+        <label for="note">Observações</label>
+        <textarea rows="4" cols="50" class="form-control" placeholder="Digite as Observações" formControlName="note"
+          maxlength="250" [class.is-invalid]="note.dirty && note.invalid"></textarea>
+        <div class="invalid-feedback">
+          Campo Obrigatório
+        </div>
+      </div>
+      <div class="form-group col-12">
+        <label for="additionalAttachments">Anexos Adicionais (Notas fiscais, documentos)</label>
+        <div class="custom-file">
+          <input type="file" class="custom-file-input" formControlName="additionalAttachments" id="additionalAttachments"
+            (change)="attachmentsHandler($event.target.files)" multiple>
+          <label class="custom-file-label" for="additionalAttachments">
+            <div class="files" #labelImportAttachments>
+              <p class="m-2 p-1">Selecione um arquivo</p>
+            </div>
+            <button type="button" class="btn btn-outline-success btn-filter mr-auto">
+              <span class="fas fa-paperclip"></span>
+              Anexar
+            </button>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer" footer>
+      <button type="button" class="btn btn-outline-success btn-cancel" (click)="hide(); cancelAction()">
+        <span class="fa fa-times"></span>
+        Cancelar
+      </button>
+      <button type="button" class="btn btn-outline-success btn-save" (click)="onSubmit()">
+        <span class="fas fa-check"></span>
+        Finalizar
+      </button>
+    </div>
+  </form>
+</app-modal>

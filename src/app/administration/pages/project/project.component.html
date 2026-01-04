@@ -1,0 +1,143 @@
+<main role="main" class="container">
+    <app-generic-page [config]="config" #genericPage></app-generic-page>
+</main>
+
+<ng-template #filterModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Filtros</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss() ; clearFilters()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <div class="modal-body d-flex flex-lg-wrap">
+        <div class="form-group col-3">
+            <label for="code">Código</label>
+            <input type="number" class="form-control" placeholder="Digite o Código" [(ngModel)]="idFilter"
+                maxlength="9" ngbAutofocus
+                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);">
+        </div>
+
+        <div class="form-group col-9">
+            <label for="description">Descrição</label>
+            <input class="form-control" [(ngModel)]="descriptionFilter" placeholder="Digite a Descrição"
+                maxlength="128">
+        </div><br>
+
+        <div class="form-group col-4">
+            <label for="initials">Sigla</label>
+            <input type="text" class="form-control" placeholder="Digite a Sigla" [(ngModel)]="initialsFilter"
+                maxlength="100">
+        </div>
+
+        <div class="form-group col-4">
+            <label for="Filial">Filial</label>
+            <ng-select [items]="listBranch" bindLabel="text" bindValue="text" [(ngModel)]="branchOfficeFilter"
+                placeholder="Selecione">
+            </ng-select>
+        </div>
+
+        <div class="form-group col-2">
+            <label for="active">Ativo</label><br>
+            <div class="form-check-inline">
+                <input class="form-check-input" type="radio" name="active" value="true" [(ngModel)]="activeFilter"
+                    id="checkbox-yes">
+                <label class="form-check-label" for="checkbox-yes">Sim</label>
+            </div>
+
+            <div class="form-check-inline">
+                <input class="form-check-input" type="radio" name="active" value="false" [(ngModel)]="activeFilter"
+                    id="checkbox-nao">
+                <label class="form-check-label" for="checkbox-nao">Não</label>
+            </div>
+        </div>
+
+        <div class="modal-footer col-12 float-right">
+            <button type="button" class="btn btn-outline-success btn-clear-filter mr-auto p-2 bd-highlight"
+                (click)="clearFilters(); genericPage.getData();">
+                <span class="fa fa-times-circle"></span>
+                Limpar Filtros
+            </button>
+            <button type="button" class="btn btn-outline-success btn-filter"
+                (click)="genericPage.getData(); modal.dismiss();">
+                <span class="fa fa-search"></span>
+                Pesquisar
+            </button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #ProjectModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">{{ edit ? 'Editar Projeto' : 'Novo Projeto'}}</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss(); cancelAction();">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <form class="needs-validation" [formGroup]="form" class="needs-validation" (ngSubmit)="onSubmit()" novalidate>
+
+        <div class="modal-body d-flex flex-lg-wrap">
+            <div class="form-group col-3">
+                <label for="code">Código</label>
+                <input type="text" class="form-control" placeholder="1, 2, 3" formControlName="code"
+                    [class.is-invalid]="code.dirty && code.invalid" readonly>
+                <div class="invalid-feedback">
+                    Campo Obrigatório
+                </div>
+            </div>
+
+            <div class="form-group col-9">
+                <label for="description">Descrição</label>
+                <input class="form-control" [class.is-invalid]="description.dirty && description.invalid"
+                    formControlName="description" placeholder="Descrição" maxlength="128" ngbAutofocus>
+                <div class="invalid-feedback">
+                    Campo Obrigatório
+                </div>
+            </div><br>
+
+            <div class="form-group col-4">
+                <label for="initials">Sigla</label>
+                <input type="text" class="form-control" [class.is-invalid]="initials.dirty && initials.invalid"
+                    placeholder="LT-E1" formControlName="initials" maxlength="100">
+                <div class="invalid-feedback">
+                    Campo Obrigatório
+                </div>
+            </div>
+
+            <div class="form-group col-4">
+                <label for="Filial">Filial</label>
+                <ng-select [items]="listBranch" bindLabel="text" bindValue="id" formControlName="branchOffice"
+                    placeholder="Filial" [class.is-invalid]="branchOffice.dirty && branchOffice.invalid">
+                </ng-select>
+                <div class="invalid" *ngIf="(branchOffice.dirty && branchOffice.invalid)">Campo Obrigatório</div>
+            </div>
+
+            <div class="form-group col-3">
+                <label for="active">Ativo</label><br>
+                <div class="form-check-inline">
+                    <input class="form-check-input" type="radio" name="active" id="checkbox-yes"
+                        formControlName="active" value="true">
+                    <label class="form-check-label" for="checkbox-yes">Sim</label>
+                </div>
+
+                <div class="form-check-inline">
+                    <input class="form-check-input" type="radio" name="active" id="checkbox-nao"
+                        formControlName="active" value="false">
+                    <label class="form-check-label" for="checkbox-nao">Não</label>
+                </div>
+                <div class="invalid" *ngIf="(active.dirty && active.invalid)">Campo Obrigatório</div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-danger btn-cancel" (click)="modal.dismiss(); cancelAction();">
+                <span class="fa fa-times"></span>
+                Cancelar
+            </button>
+            <button type="button" class="btn btn-outline-success btn-save" (click)="onSubmit();">
+                <span class="far fa-save"></span>
+                Salvar
+            </button>
+        </div>
+    </form>
+</ng-template>

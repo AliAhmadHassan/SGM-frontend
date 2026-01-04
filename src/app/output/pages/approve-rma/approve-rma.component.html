@@ -1,0 +1,197 @@
+<main role="main" class="container">
+  <app-generic-page [config]="config" #genericPage></app-generic-page>
+</main>
+
+<ng-template #filterModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title" ngbAutofocus>Filtros</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss() ; clearFilters()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body d-flex flex-lg-wrap">
+    <div class="form-group col-6">
+      <label for="orders">RMA</label>
+      <input type="text" class="form-control" placeholder="Código RMA" [(ngModel)]="rmaFilter" maxlength="100">
+    </div>
+    <div class="form-group col-3">
+      <app-datepicker labelName="Data de Emissão RMA" [(date)]="dateBeginFilter" buttonText="De">
+      </app-datepicker>
+    </div>
+    <div class="form-group col-3">
+      <app-datepicker labelName="Data de Emissão RMA" [(date)]="dateFinishFilter" buttonText="Até">
+      </app-datepicker>
+    </div>
+    <div class="form-group col-6">
+      <label for="status">Status RMA</label>
+      <ng-select [items]="statusList" bindLabel="text" bindValue="text" [(ngModel)]="statusFilter"
+        placeholder="Selecione">
+      </ng-select>
+    </div>
+    <div class="form-group col-6">
+      <label for="approver">Aprovador</label>
+      <ng-select [items]="approverList" bindLabel="text" bindValue="text" [(ngModel)]="approverFilter"
+        placeholder="Selecione">
+      </ng-select>
+    </div>
+    <div class="form-group col-4">
+      <label for="installation">Instalação Origem</label>
+      <ng-select [items]="installationList" bindLabel="text" bindValue="text" [(ngModel)]="installationFilter"
+        placeholder="Selecione">
+      </ng-select>
+    </div>
+    <div class="form-group col-4">
+      <label for="receiverCode">Código Destinatário</label>
+      <ng-select [items]="receiverCodeList" bindLabel="text" bindValue="text" [(ngModel)]="receiverCodeFilter"
+        placeholder="Selecione">
+      </ng-select>
+    </div>
+    <div class="form-group col-4">
+      <label for="receiverName">Nome Destinatário</label>
+      <input type="text" class="form-control" placeholder="Digite o Fornecedor" [(ngModel)]="receiverNameFilter"
+        maxlength="250">
+    </div>
+    <div class="form-group col-6">
+      <label for="materialCode">Código Material</label>
+        <app-live-search label="code" value="code"
+          [items]="materials"
+          (search)="customSearchFn($event)"
+          (change)="setMaterial($event)">
+        </app-live-search>
+    </div>
+    <div class="form-group col-6">
+      <label for="materialDescription">Descrição</label>
+      <input type="text" class="form-control" placeholder="Digite a Descrição" [(ngModel)]="materialDescriptionFilter"
+        maxlength="250">
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-success btn-clear-filter mr-auto p-2 bd-highlight"
+      (click)="clearFilters(); genericPage.getData();">
+      <span class="fa fa-times-circle"></span>
+      Limpar Filtros
+    </button>
+    <button type="button" class="btn btn-outline-success btn-filter" (click)="genericPage.getData(); modal.dismiss();">
+      <span class="fa fa-search"></span>
+      Pesquisar
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #detailsModal let-modal>
+  <div *ngIf="data">
+    <div class="modal-header">
+      <h4 class="modal-title blue-title" id="modal-basic-title" ngbAutofocus>RMA {{ data.rmaId }}</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss();">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
+    <div class="row">
+      <div class="col-5">
+        <div class="card triple-card-first-position">
+          <div class="card-body triple-card__body">
+            <div class="row">
+              <div class="col">
+                <p class="information-title">Data Emissão</p>
+                <span class="information-item">{{ data.emissionDate | date: 'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="col">
+                <span class="information-title">Status</span>
+                <p class="information-item">
+                  <app-status [status]="data.status"></app-status>
+                </p>
+              </div>
+              <div class="col">
+                <span class="information-title">Aprovador</span>
+                <p class="information-item">{{ data.approverUser }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-2">
+        <div class="card triple-card-second-position">
+          <div class="card-body triple-card__body">
+            <div class="row">
+              <div class="col">
+                <p class="information-title">Instalação Origem</p>
+                <span class="information-item">{{ data.installation }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-5">
+        <div class="card triple-card-third-position">
+          <div class="card-body triple-card__body">
+            <div class="row">
+              <div class="col">
+                <span class="information-title">Código Destinatário</span>
+                <p class="information-item">{{ data.receiverCode }}</p>
+              </div>
+              <div class="col">
+                <span class="information-title">Nome Destinatário</span>
+                <p class="information-item">
+                  <p class="information-item">{{ data.receiverName }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <table class="table table-striped rounded-top modal-table">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Cod. Material</th>
+          <th>Descrição</th>
+          <th>Un.</th>
+          <th>Disciplina</th>
+          <th>Solicitado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of data.materials; let i = index;">
+          <td>{{ i + 1 }}</td>
+          <td>{{ item.materialCode }}</td>
+          <td>{{ item.description }}</td>
+          <td>{{ item.unity }}</td>
+          <td>{{ item.discipline }}</td>
+          <td>{{ item.requested }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="modal-footer d-flex">
+      <button type="button" class="btn btn-outline-success btn-export"
+        (click)="genericPage.getData(); modal.dismiss(); cancelAction();">
+        <span class="fa fa-share-square"></span>
+        Exportar
+      </button>
+      <button type="button" class="btn btn-outline-success btn-print mr-auto" (click)="printModal(); modal.dismiss();">
+        <span class="fa fa-print"></span>
+        Imprimir
+      </button>
+      <button type="button" class="btn btn-outline-success btn-cancel" (click)="modal.dismiss();">
+        <span class="fa fa-times"></span>
+        Voltar
+      </button>
+      <button *ngIf="data.status != 'Cancelado' && data.orderStatus != 'Recebido'" type="button"
+        class="btn btn-outline-danger"
+        (click)="sendNewStatus(data.rmaId, 14, 0); modal.dismiss(); reloadPage()">
+        <span class="fas fa-thumbs-down"></span>
+        Reprovar
+      </button>
+      <button *ngIf="data.status != 'Cancelado' && data.orderStatus != 'Recebido'" type="button"
+        class="btn btn-outline-success btn-save"
+        (click)="sendNewStatus(data.rmaId, 14, 1); modal.dismiss(); reloadPage()">
+        <span class="fas fa-thumbs-up"></span>
+        Aprovar
+      </button>
+    </div>
+  </div>
+</ng-template>

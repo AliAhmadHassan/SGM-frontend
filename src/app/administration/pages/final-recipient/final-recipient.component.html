@@ -1,0 +1,100 @@
+<main role="main" class="container">
+    <app-generic-page [config]="config" #genericPage></app-generic-page>
+</main>
+
+<ng-template #filterModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Filtros</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss() ; clearFilters()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body d-flex flex-lg-wrap">
+        <div class="form-group col-6">
+            <label for="id">Código</label>
+            <input type="number" class="form-control" placeholder="Digite o Código" [(ngModel)]="codeFilter"
+                maxlength="9" ngbAutofocus
+                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);">
+        </div>
+        <div class="form-group col-6">
+            <label for="description">Nome</label>
+            <input type="text" class="form-control" id="name" placeholder="Digite o Nome"
+                [(ngModel)]="descriptionFilter" maxlength="250">
+        </div><br>
+
+        <div class="form-group col-6">
+            <label for="tipo">Tipo</label>
+            <ng-select [items]="listReceiverType" bindLabel="text" bindValue="text" placeholder="Selecione"
+                [(ngModel)]="receiverTypeTextFilter">
+            </ng-select>
+        </div>
+
+        <div class="form-group col-6">
+            <label for="address">Endereço</label>
+            <input type="text" class="form-control" id="address" placeholder="Digite a Rua, Avenida"
+                [(ngModel)]="addressFilter" maxlength="250">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-success btn-clear-filter mr-auto p-2 bd-highlight"
+            (click)="clearFilters(); genericPage.getData();">
+            <span class="fa fa-times-circle"></span>
+            Limpar Filtros
+        </button>
+        <button type="button" class="btn btn-outline-success btn-filter"
+            (click)="genericPage.getData(); modal.dismiss();">
+            <span class="fa fa-search"></span>
+            Pesquisar
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #recipientModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">
+            {{ edit ? 'Editar Destinatário Final' : 'Novo Destinatário Final'}}</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss(); cancelAction();">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <form nz-form [formGroup]="form" class="needs-validation" (ngSubmit)="onSubmit()" novalidate>
+        <div class="modal-body d-flex flex-lg-wrap">
+            <div class="form-group col-6">
+                <label for="description">Nome</label>
+                <input type="text" class="form-control" formControlName="description" placeholder="Nome"
+                    [class.is-invalid]="description.dirty && description.invalid" maxlength="250" ngbAutofocus>
+                <div class="invalid" *ngIf="description.dirty && description.invalid">
+                    Campo Obrigatório
+                </div>
+            </div>
+            <div class="form-group col-6">
+                <label for="tipo">Tipo</label>
+                <ng-select [items]="listReceiverType" bindLabel="text" bindValue="id" placeholder="Tipo"
+                    formControlName="receiverTypeId"
+                    [class.is-invalid]="receiverTypeId.dirty && receiverTypeId.invalid">
+                </ng-select>
+                <div class="invalid" *ngIf="receiverTypeId.dirty && receiverTypeId.invalid">
+                    Campo Obrigatório
+                </div>
+            </div>
+            <div class="form-group col-12">
+                <label for="endereco">Endereço</label>
+                <input type="text" class="form-control" [class.is-invalid]="address.dirty && address.invalid"
+                    placeholder="Av; Rua; Canteiro" formControlName="address" maxlength="250">
+                <div class="invalid" *ngIf="address.dirty && address.invalid">
+                    Campo Obrigatório
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-success btn-cancel" (click)="modal.dismiss(); cancelAction();">
+                <span class="fa fa-times"></span>
+                Cancelar
+            </button>
+            <button type="button" class="btn btn-outline-success btn-save" (click)="onSubmit();">
+                <span class="far fa-save"></span>
+                Salvar
+            </button>
+        </div>
+    </form>
+</ng-template>
